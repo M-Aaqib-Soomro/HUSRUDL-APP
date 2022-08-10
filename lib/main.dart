@@ -112,15 +112,20 @@ class MainScreen extends StatelessWidget {
     );
 
     // Send the request and wait for the response
-    http.StreamedResponse r = await request.send();
+    http.StreamedResponse response = await request.send();
 
-    final output = await r.stream.transform(utf8.decoder).join();
+    Map<String, dynamic> output = jsonDecode(
+      await response.stream.transform(utf8.decoder).join(),
+    );
 
-    print(output);
+    // print(output['message']);
+
+    // final output = await r.stream.transform(utf8.decoder).join();
+    // print(output);
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Output(output)),
+      MaterialPageRoute(builder: (context) => Output(output['message'])),
     );
   }
 
