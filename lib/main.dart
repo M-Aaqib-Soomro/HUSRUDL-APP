@@ -110,12 +110,21 @@ class MainScreen extends StatelessWidget {
       ),
     );
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: const Text("Classifying Image")),
+    );
+
     // Send the request and wait for the response
     http.StreamedResponse response = await request.send();
 
+    final outputBody = await response.stream.transform(utf8.decoder).join();
     Map<String, dynamic> output = jsonDecode(
-      await response.stream.transform(utf8.decoder).join(),
+      outputBody,
     );
+
+    // Map<String, dynamic> output = jsonDecode(
+    //   await response.stream.transform(utf8.decoder).join(),
+    // );
 
     // print(output['message']);
 
@@ -228,13 +237,14 @@ class Output extends StatelessWidget {
       // Define main body of the page as center
       body: Center(
         // Define a column inside Center widget
-        child: Column(
+        child: ListView(
+          padding: const EdgeInsets.all(8),
           // Set the column x and yproperties to center
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.center,
 
           // Define a Children list of widgets
-          children: [
+          children: <Widget>[
             // Show image on the output page
             Image.file(image),
 
