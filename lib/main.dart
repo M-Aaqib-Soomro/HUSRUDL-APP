@@ -1,7 +1,5 @@
 // Importing the required packages
-//import 'dart:developer';
 import 'dart:convert';
-//import 'dart:typed_data';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -92,7 +90,8 @@ class MainScreen extends StatelessWidget {
   // It is of Future type because it is an asynchronous task, and takes time to be done
   Future<void> uploadImage(image, context) async {
     // Define url variable, and assign the API endpoint to it
-    final url = "http://10.0.2.2:5000/classifycharacter";
+    // final url = "http://10.0.2.2:5000/classifycharacter";
+    final url = "https://hucc-api.herokuapp.com/classifycharacter";
 
     // Create an http request object
     // Request method will be POST
@@ -125,7 +124,12 @@ class MainScreen extends StatelessWidget {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Output(output['message'])),
+      MaterialPageRoute(
+        builder: (context) => Output(
+          output['message'],
+          File(image.path),
+        ),
+      ),
     );
   }
 
@@ -201,32 +205,65 @@ class MainScreen extends StatelessWidget {
   }
 }
 
+// Define the class Output which will show the output returned on the screen
 class Output extends StatelessWidget {
   //const Output({Key? key}) : super(key: key);
 
+  // Initialize variable to store the classified output value
   final String classifiedOutput;
+  final File image;
 
-  Output(this.classifiedOutput);
+  // Constructor definition
+  Output(this.classifiedOutput, this.image);
 
+  // Main widget where we will show the output
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Define the app bar
       appBar: AppBar(
+        // Show title on the top of the page
         title: Text("Classified Text"),
       ),
+      // Define main body of the page as center
       body: Center(
+        // Define a column inside Center widget
         child: Column(
+          // Set the column x and yproperties to center
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
+
+          // Define a Children list of widgets
           children: [
+            // Show image on the output page
+            Image.file(image),
+
+            // Define an empty container for space between the two widgets
+            Container(
+              height: 10,
+            ),
+
+            // First child is Output Text displayed
             Text(classifiedOutput),
+
+            // Define an empty container for space between the two widgets
+            Container(
+              height: 10,
+            ),
+
+            // And the second main widget is an ElevatedButton to copy the text to the clipboard
             ElevatedButton(
+              // Run this function when this button is pressed
               onPressed: () {
+                // Copy the classified output to the clipboard
                 FlutterClipboard.copy(classifiedOutput);
+
+                // Show a notification that the text has been copied
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: const Text("Text copied successfully!")),
                 );
               },
+              // The text of the button will be this
               child: Text("Copy"),
             ),
           ],
